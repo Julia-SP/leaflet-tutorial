@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
      crossorigin=""/>
+     
 
      <!--Añadimos estilos básicos para el mapa-->
      <style>
@@ -17,12 +18,36 @@
         height: 400px;
         width: 600px;
         border-radius: 8px;
-
         }
+        body{
+            background-color: rgb(22, 22, 116);
+            margin:30px;
+        }
+        h1{
+            font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+            color: white;
+            font-size: 30pt;
+            margin-bottom: 3px;
+        }
+        p{
+            font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+            color: white;
+            font-size: 18pt;
+            margin-top: 3px;
+        }
+
     </style>
 </head>
 <body>
-   
+    <div class="container">
+        <header>
+            <h1>Explorador de Mapas</h1>
+            <p>Usando por primera vez Leaflet.js</p>
+        </header>
+        
+        <main>
+            <div class="map-container">
+                <div id="map"></div>
     <!--Aquí se reenderiza el mapa-->
     <div id="map"></div>
 
