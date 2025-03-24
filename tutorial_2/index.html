@@ -1,0 +1,81 @@
+<!--Seguimos el segundo tutorial de leaflef para , especialmente para móviles que necesiten geolocalización en tiempo real.
+✅ Abre un mapa que ocupa toda la pantalla.
+✅ Intenta localizar al usuario automáticamente.
+✅ Muestra un marcador en la posición del usuario.
+✅ Dibuja un círculo alrededor con el radio de precisión.
+✅ Si la ubicación falla, muestra un mensaje de error.-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+<!-- Configuración para que el sitio web sea responsive y se adapte a móviles -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Tutorial 2 Leaflet</title>
+<!-- Añadimos los estilos CSS que Leaflet necesita para renderizar correctamente los mapas -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+        crossorigin=""/>
+    
+    <style>
+        /* Estilos para que el mapa ocupe toda la pantalla */
+        body {
+            padding: 0;
+            margin: 0;
+        }
+        html, body, #map {
+            height: 100%;
+            width: 100vw;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Contenedor del mapa -->
+    <div id="map"></div>
+
+    <!-- Importamos Leaflet.js, que nos proporciona todas las funciones para interactuar con mapas -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+        crossorigin="">
+    </script>
+
+    <script>
+        /* Creamos el objeto "map" y usamos fitWorld() para centrar el mapa en la ubicación del usuario */
+        let map = L.map('map').fitWorld();
+
+        /* Agregamos la capa de OpenStreetMap como mapa base */
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19, // Nivel máximo de zoom permitido
+            attribution: '© OpenStreetMap' // Credito a OpenStreetMap
+        }).addTo(map);
+
+        /* Pedimos la ubicación del usuario y centramos el mapa en su posición con zoom 16 */
+        map.locate({setView: true, maxZoom: 16});
+
+        /* Función que se ejecuta cuando se encuentra la ubicación del usuario */
+        function onLocationFound(e) {
+            var radius = e.accuracy; // Precisión de la ubicación en metros
+
+            /* Añadimos un marcador en la ubicación del usuario */
+            L.marker(e.latlng).addTo(map)
+                .bindPopup("You are within " + radius + " meters from this point") // Mensaje con la precisión
+                .openPopup(); // Abre el popup automáticamente
+
+            /* Dibujamos un círculo en la ubicación del usuario con el radio de precisión */
+            L.circle(e.latlng, radius).addTo(map);
+        }
+
+        /* Evento que se ejecuta cuando Leaflet encuentra la ubicación del usuario */
+        map.on('locationfound', onLocationFound);
+
+        /* Función que se ejecuta si hay un error al obtener la ubicación */
+        function onLocationError(e) {
+            alert(e.message); // Muestra un mensaje de error
+        }
+
+        /* Evento que captura errores de geolocalización */
+        map.on('locationerror', onLocationError);
+    </script>
+
+</body>
+</html>
