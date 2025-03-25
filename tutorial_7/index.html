@@ -1,0 +1,91 @@
+<!--Tutorial 7, mapas con capas
+Con este código puedes alternar entre mapas base y activar/desactivar elementos en Leaflet.-->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control de Capas en Leaflet</title>
+
+    <!-- Importamos la hoja de estilos de Leaflet -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+        crossorigin=""/>
+
+    <style>
+        /* Definimos el tamaño del mapa */
+        #map {
+            height: 100vh;
+            width: 100vw;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Contenedor donde se renderizará el mapa -->
+    <div id="map"></div>
+
+    <!-- Importamos Leaflet.js -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+        crossorigin=""></script>
+
+    <script>
+        // 1️⃣ Crear el mapa y centrarlo en una ubicación
+        let map = L.map('map').setView([51.505, -0.09], 13);
+
+        // 2️⃣ Definir las capas base del mapa
+        // Mapa de calles (OpenStreetMap)
+        let streetMap = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        });
+        // Mapa topográfico (OpenTopoMap)
+        let topoMap = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenTopoMap contributors'
+        });
+
+        // 🔹 Agregamos una de las capas base por defecto (solo podemos tener una capa activa cada vez)
+        streetMap.addTo(map);
+
+        /*3️⃣ Crear capas superpuestas
+        Se crean tres elementos superpuestos:
+        * marker: Un marcador en un punto específico.
+        * circle: Un círculo rojo con radio 500 metros.
+        * polygon: Un polígono con tres vértices.
+        * (Estas capas pueden activarse o desactivarse individualmente.)
+        */
+
+        let marker = L.marker([51.5, -0.09]); // Un marcador
+        let circle = L.circle([51.508, -0.11], { // Un círculo rojo
+            color: 'red',
+            fillColor: '#f03',
+            fillOpacity: 0.5,
+            radius: 500
+        });
+        let polygon = L.polygon([ // Un polígono
+            [51.509, -0.08],
+            [51.503, -0.06],
+            [51.51, -0.047]
+        ]);
+
+        // 4️⃣ Crear objetos para el control de capas:
+        //  baseMaps contiene las capas base, permitiendo alternar entre ellas.
+        let baseMaps = {
+            "Mapa de Calles": streetMap,
+            "Mapa Topográfico": topoMap
+        };
+        //overlayMaps contiene capas adicionales que se pueden activar/desactivar.
+        let overlayMaps = {
+            "Marcador": marker,
+            "Círculo": circle,
+            "Polígono": polygon
+        };
+
+        // 5️⃣ Agregar el control de capas al mapa
+        //Se usa L.control.layers(baseMaps, overlayMaps) para agregar el selector de capas en la interfaz.
+
+        L.control.layers(baseMaps, overlayMaps).addTo(map);
+    </script>
+
+</body>
+</html>

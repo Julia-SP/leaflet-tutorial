@@ -1,0 +1,66 @@
+<!--Tutorial 10 Integrar servidores
+✅ Crea un mapa centrado en Europa con OpenStreetMap como base.
+✅ Carga una capa WMS desde un servidor externo (GeoServer).
+✅ Superpone la capa WMS sobre el mapa base con transparencia.
+
+Este código es útil para visualizar datos geoespaciales en tiempo real sin necesidad de descargar archivos. -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leaflet - Capas WMS</title>
+
+    <!-- Importamos la hoja de estilos de Leaflet -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+        crossorigin=""/>
+
+    <style>
+        /* Definimos el tamaño del mapa */
+        #map {
+            height: 600px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Contenedor donde se renderizará el mapa -->
+    <div id="map"></div>
+
+    <!-- Importamos Leaflet.js -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+        crossorigin=""></script>
+
+    <script>
+        // 1️⃣ Crear el mapa y centrarlo en Europa con un nivel de zoom adecuado
+        let map = L.map('map').setView([51.505, -0.09], 5);
+
+        /* 2️⃣ Añadir una capa base de OpenStreetMap
+        * Utiliza un servidor WMS para cargar datos geoespaciales desde GeoServer.
+        * El servicio WMS devuelve imágenes de mapas generadas en el servidor, en este caso, los estados de EE.UU.
+        * Opciones de configuración:
+        -layers: 'topp:states' → Carga la capa de estados de EE.UU.
+        -format: 'image/png' → El formato de la imagen de la capa.
+        -transparent: true → Permite que la capa tenga fondo transparente, para que el mapa base sea visible.
+        -attribution: "© GeoServer" → Muestra créditos por los datos.*/
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 18,
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        }).addTo(map);
+
+        // 3️⃣ Agregar una capa WMS (Web Map Service)
+        let wmsLayer = L.tileLayer.wms("https://ahocevar.com/geoserver/wms", {
+            layers: 'topp:states', // Nombre de la capa en el servidor WMS
+            format: 'image/png',  // Formato de imagen de la capa
+            transparent: true,    // Fondo transparente para superponer la capa sobre el mapa base
+            attribution: "© GeoServer"
+        }).addTo(map);
+
+    </script>
+
+</body>
+</html>

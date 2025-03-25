@@ -1,0 +1,59 @@
+<!--Tutorial 8 Aprendemos sobre zoom
+✅ Carga un mapa de OpenStreetMap con restricciones de zoom.
+✅ Permite hacer zoom entre niveles 3 y 18.
+✅ Muestra un mensaje con el nivel de zoom actual cuando el usuario cambia el zoom.-->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Niveles de Zoom en Leaflet</title>
+
+    <!-- Importamos la hoja de estilos de Leaflet -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+        crossorigin=""/>
+
+    <style>
+        /* Definimos el tamaño del mapa */
+        #map {
+            height: 100vh;
+            width: 100vw;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Contenedor donde se renderizará el mapa -->
+    <div id="map"></div>
+
+    <!-- Importamos Leaflet.js -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+        crossorigin=""></script>
+
+    <script>
+        // 1️⃣ Crear el mapa y centrarlo en una ubicación con un nivel de zoom específico (13)
+        let map = L.map('map').setView([51.505, -0.09], 13);
+
+        // 2️⃣ Agregar una capa de mapa base de OpenStreetMap con control sobre los niveles de zoom
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {//para agregar capa base L.tileLayer
+            minZoom: 3,  // Nivel mínimo de zoom permitido (restringido)
+            maxZoom: 18, // Nivel máximo de zoom permitido (restringido)
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        // 3️⃣ Agregar un marcador en la ubicación inicial
+        let marker = L.marker([51.505, -0.09]).addTo(map);
+
+        // 4️⃣ Agregar un evento para mostrar el nivel de zoom actual al hacer zoom
+        function onZoomEnd() {
+            alert("Nivel de zoom actual: " + map.getZoom());
+        }
+
+        // 5️⃣ Detecta el evento 'zoomend' cuando el usuario hace zoom y llama a la funcion para mostrar el nivel de zoom actual 
+        map.on('zoomend', onZoomEnd);
+    </script>
+
+</body>
+</html>

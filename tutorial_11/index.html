@@ -1,0 +1,93 @@
+<!--Tutorial 11 Map panes
+Un "pane" es una capa especial donde se dibujan elementos.
+✅ Crea un mapa con OpenStreetMap.
+✅ Define "panes" personalizados para organizar elementos.
+✅ Añade marcadores y polígonos en diferentes panes para controlar su orden de visualización.
+
+Esto permite un control avanzado sobre el orden de renderizado de los elementos en el mapa.
+-->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leaflet - Map Panes</title>
+
+    <!-- Importamos la hoja de estilos de Leaflet -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+        crossorigin=""/>
+
+    <style>
+        /* Definimos el tamaño del mapa */
+        #map {
+            height: 600px;
+            width: 100%;
+        }
+
+        /* Estilizamos los panes personalizados */
+        .custom-pane {
+            z-index: 650; /* Un valor mayor para que se dibuje encima de otros elementos */
+        }
+
+        .custom-marker {
+            background-color: rgba(255, 0, 0, 0.5);
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            position: absolute;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Contenedor donde se renderizará el mapa -->
+    <div id="map"></div>
+
+    <!-- Importamos Leaflet.js -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+        crossorigin=""></script>
+
+    <script>
+        // 1️⃣ Crear el mapa y centrarlo en un punto específico con zoom adecuado
+        let map = L.map('map').setView([51.505, -0.09], 13);
+
+        // 2️⃣ Añadir una capa base de OpenStreetMap
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        }).addTo(map);
+
+        // 3️⃣ Crear un nuevo "pane" (capa) personalizado
+        let customPane = map.createPane('customPane');
+        customPane.style.zIndex = 650; // Ajustamos la prioridad de dibujo, cuanto mayor, más arriba está
+
+        // 4️⃣ Agregar un marcador normal
+        L.marker([51.5, -0.09]).addTo(map)
+            .bindPopup("Soy un marcador normal");
+
+        // 5️⃣ Agregar un marcador en el pane personalizado
+        // Este marcador se dibuja en customPane en lugar del pane normal.
+        //Permite organizar diferentes elementos del mapa en capas separadas.
+        L.marker([51.51, -0.1], {pane: 'customPane'}) // Se asigna el nuevo pane
+            .addTo(map)
+            .bindPopup("Estoy en un pane personalizado");
+
+        // 6️⃣ Agregar una capa de polígonos en otro pane personalizado
+        /*Crea otro pane (vectorPane) con zIndex = 500 para que esté debajo de los marcadores.
+        *Dibuja un polígono azul dentro de este nuevo pane.*/
+        let vectorPane = map.createPane('vectorPane');
+        vectorPane.style.zIndex = 500; // Para que esté debajo de los marcadores
+
+        L.polygon([
+            [51.52, -0.12],
+            [51.51, -0.13],
+            [51.53, -0.14]
+        ], {pane: 'vectorPane', color: 'blue'}).addTo(map)
+        .bindPopup("Soy un polígono en un pane personalizado");
+
+    </script>
+
+</body>
+</html>

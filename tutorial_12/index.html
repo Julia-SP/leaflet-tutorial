@@ -1,0 +1,99 @@
+<!--tutorial 12 Overlays
+✅ Crea un mapa con OpenStreetMap.
+✅ Define diferentes capas base (OSM y Satélite).
+✅ Agrega overlays como un marcador, un círculo y un polígono.
+✅ Permite alternar entre capas base y activar/desactivar overlays mediante un control interactivo.
+
+Este método es útil cuando se necesita mostrar múltiples capas opcionales en un mapa interactivo. -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leaflet - Overlays con SVG</title>
+
+    <!-- Importamos la hoja de estilos de Leaflet -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+        crossorigin=""/>
+
+    <style>
+        /* Definimos el tamaño del mapa */
+        #map {
+            height: 600px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Contenedor donde se renderizará el mapa -->
+    <div id="map"></div>
+
+    <!-- Importamos Leaflet.js -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+        crossorigin=""></script>
+
+    <script>
+        // 1️⃣ Crear el mapa y centrarlo en un punto específico con zoom adecuado
+        let map = L.map('map').setView([51.505, -0.09], 13);
+
+        // 2️⃣ Definir diferentes capas base del mapa
+        let osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        });
+
+        let satellite = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+            maxZoom: 17,
+            attribution: '&copy; <a href="https://opentopomap.org">OpenTopoMap</a>'
+        });
+
+        // 3️⃣ Añadir una capa de marcador
+        let marker = L.marker([51.5, -0.09]);
+
+        // 4️⃣ Añadir una capa de círculo
+        let circle = L.circle([51.508, -0.11], {
+            color: 'red',
+            fillColor: '#f03',
+            fillOpacity: 0.5,
+            radius: 500
+        });
+
+        // 5️⃣ Añadir una capa de polígono
+        let polygon = L.polygon([
+            [51.509, -0.08],
+            [51.503, -0.06],
+            [51.51, -0.047]
+        ]);
+
+        // 6️⃣ Añadir un SVG Overlay al mapa
+        let svgOverlay = L.imageOverlay("https://upload.wikimedia.org/wikipedia/commons/6/6a/JavaScript-logo.png",
+            [[51.49, -0.12], [51.51, -0.05]]
+        );
+
+        // 7️⃣ Agrupar las capas base y los overlays
+        let baseMaps = {
+            "OpenStreetMap": osm,
+            "Satellite": satellite
+        };
+
+        let overlayMaps = {
+            "Marcador": marker,
+            "Círculo": circle,
+            "Polígono": polygon,
+            "SVG Overlay": svgOverlay
+        };
+
+        // 8️⃣ Agregar el control de capas al mapa
+        L.control.layers(baseMaps, overlayMaps).addTo(map);
+
+        // 9️⃣ Añadir la capa base por defecto
+        osm.addTo(map);
+
+    </script>
+
+</body>
+</html>
+

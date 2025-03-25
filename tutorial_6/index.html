@@ -1,0 +1,169 @@
+<!--Tutorial 6 Mapa Coropleta
+ Con este código puedes crear mapas temáticos de densidad de población en Leaflet usando GeoJSON.-->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mapa Choropleth con Leaflet</title>
+
+    <!-- Importamos la hoja de estilos de Leaflet -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+        crossorigin=""/>
+
+    <style>
+        /* Definimos el tamaño del mapa para que ocupe toda la pantalla */
+        #map {
+            height: 100vh;
+            width: 100vw;
+        }
+        /* Estilos para la leyenda del mapa */
+        .info {
+            padding: 6px 8px;
+            font: 14px/16px Arial, Helvetica, sans-serif;
+            background: white;
+            background: rgba(255, 255, 255, 0.8);
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+            border-radius: 5px;
+        }
+        .legend {
+            text-align: left;
+            line-height: 18px;
+            color: #555;
+        }
+        .legend i {
+            width: 18px;
+            height: 18px;
+            float: left;
+            margin-right: 8px;
+            opacity: 0.7;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Contenedor donde se renderizará el mapa -->
+    <div id="map"></div>
+
+    <!-- Importamos Leaflet.js -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+        crossorigin=""></script>
+
+    <!-- Importamos datos GeoJSON de ejemplo -->
+    <script src="https://leafletjs.com/examples/choropleth/us-states.js"></script>
+
+    <script>
+        // 1️⃣ Creamos el mapa y lo centramos en EE.UU. Nivel de zoom  4
+        let map = L.map('map').setView([37.8, -96], 4);
+
+        // 2️⃣ Añadimos una capa base de OpenStreetMap que carga el mapa
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        // 3️⃣ Función para asignar un color según el valor de densidad de población
+        function getColor(d) {
+            return d > 1000 ? '#800026' :
+                   d > 500  ? '#BD0026' :
+                   d > 200  ? '#E31A1C' :
+                   d > 100  ? '#FC4E2A' :
+                   d > 50   ? '#FD8D3C' :
+                   d > 20   ? '#FEB24C' :
+                   d > 10   ? '#FED976' :
+                              '#FFEDA0';
+        }
+
+        // 4️⃣ Función para aplicar estilo a cada estado del mapa
+        function style(feature) {
+            return {
+                fillColor: getColor(feature.properties.density), // Color según densidad
+                weight: 2, //el borde
+                opacity: 1,
+                color: 'white', // Bordes blancos
+                dashArray: '3',
+                fillOpacity: 0.7 // transparencia
+            };
+        }
+
+        // 5️⃣ Resaltar el estado cuando el mouse pasa sobre él. El borde se pone gordo al hacer hover
+        function highlightFeature(e) {
+            let layer = e.target;
+            layer.setStyle({
+                weight: 5,//el borde CAMBIA
+                color: '#666',
+                dashArray: '',
+                fillOpacity: 0.7
+            });
+
+            layer.bringToFront();// coloca esta zona en primer plano
+            info.update(layer.feature.properties);
+        }
+
+        // 6️⃣ Restablecer el estilo cuando el mouse sale del estado
+        function resetHighlight(e) {
+            geojson.resetStyle(e.target);
+            info.update();
+        }
+
+        // 7️⃣ Zoom al estado cuando se hace clic sobre él
+        function zoomToFeature(e) {
+            map.fitBounds(e.target.getBounds());
+        }
+
+        // 8️⃣ Asignar los eventos a cada estado
+        function onEachFeature(feature, layer) {
+            layer.on({
+                mouseover: highlightFeature,
+                mouseout: resetHighlight,
+                click: zoomToFeature
+            });
+        }
+
+        // 9️⃣ Agregar el GeoJSON al mapa con los estilos y eventos definidos
+        let geojson = L.geoJSON(statesData, {
+            style: style,
+            onEachFeature: onEachFeature
+        }).addTo(map);
+
+        // 🔟 Crear un panel informativo en la esquina superior derecha
+        let info = L.control();
+
+        info.onAdd = function (map) {
+            this._div = L.DomUtil.create('div', 'info');
+            this.update();
+            return this._div;
+        };
+
+        info.update = function (props) {
+            this._div.innerHTML = '<h4>Densidad de población</h4>' +  (props ?
+                '<b>' + props.name + '</b><br />' + props.density + ' personas / mi²'
+                : 'Pase el mouse sobre un estado');
+        };
+
+        info.addTo(map);
+
+        // 1️⃣1️⃣ Crear una leyenda con colores y valores
+        let legend = L.control({position: 'bottomright'});
+
+        legend.onAdd = function (map) {
+            let div = L.DomUtil.create('div', 'info legend'),
+                grades = [0, 10, 20, 50, 100, 200, 500, 1000],
+                labels = [];
+
+            for (let i = 0; i < grades.length; i++) {
+                div.innerHTML +=
+                    '<i style="background:' + getColor(grades[i] + 1) + '"></i> ' +
+                    grades[i] + (grades[i + 1] ? '&ndash;' + grades[i + 1] + '<br>' : '+');
+            }
+
+            return div;
+        };
+
+        legend.addTo(map);
+
+    </script>
+</body>
+</html>

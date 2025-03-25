@@ -1,0 +1,83 @@
+<!--Tutorial 9 mapas sin base geográfica
+✅ Crea un mapa sin coordenadas geográficas (sistema CRS Simple).
+✅ Muestra una imagen como fondo en lugar de un mapa tradicional.
+✅ Permite hacer zoom y desplazarse sobre la imagen.
+✅ Agrega un marcador y un rectángulo sobre la imagen para resaltar elementos.
+
+Este código es útil para mapas de juegos, planos de edificios o cualquier imagen que no use coordenadas geográficas. -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leaflet - CRS Simple</title>
+
+    <!-- Importamos la hoja de estilos de Leaflet -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+        crossorigin=""/>
+
+    <style>
+        /* Definimos el tamaño del mapa */
+        #map {
+            height: 500px;
+            width: 600px;
+            border: 2px solid black;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Contenedor donde se renderizará el mapa -->
+    <div id="map"></div>
+
+    <!-- Importamos Leaflet.js -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+        crossorigin=""></script>
+
+    <script>
+        /* 1️⃣ Crear el mapa con un sistema de coordenadas simple (CRS.Simple)
+        * crs: L.CRS.Simple → Define un sistema de coordenadas plano en lugar de coordenadas geográficas (latitud/longitud).
+        * Se establece un zoom mínimo de -2 y máximo de 2 para ajustar la escala de la imagen.
+        */
+        let map = L.map('map', {
+            crs: L.CRS.Simple,  // Utilizamos un sistema de coordenadas plano (sin geolocalización)
+            minZoom: -2,        // Permite hacer más zoom out
+            maxZoom: 2          // Permite hacer más zoom in
+        });
+
+        /* 2️⃣ Definir las dimensiones (los límites) de la imagen a utilizar como mapa (en píxeles) 
+        * Se define un área de 1000x1000 píxeles como el "espacio" en el que se ubicará la imagen.
+        * Los valores representan la esquina superior izquierda (0,0) y la esquina inferior derecha (1000,1000).*/
+        let bounds = [[0, 0], [1000, 1000]]; // Imagen de 1000x1000 px
+
+        /* 3️⃣ Agregar una imagen como fondo en lugar de un mapa de OpenStreetMap
+        * L.imageOverlay() se usa para colocar una imagen como fondo en lugar de un mapa tradicional.
+        * La imagen se ajusta dentro de los límites definidos (bounds).*/
+        L.imageOverlay('https://leafletjs.com/examples/crs-simple/uqm_map_full.png', bounds).addTo(map);
+
+        // 4️⃣ Ajustar el mapa para que la imagen cubra completamente la vista
+        map.fitBounds(bounds);
+
+        // 5️⃣ Agregar un marcador en un punto específico de la imagen
+        let marker = L.marker([500, 500]).addTo(map) // Coordenadas en el centro de la imagen
+            .bindPopup("Marcador en el centro"); // Mensaje emergente
+
+        /* 6️⃣ Agregar un rectángulo para señalar un área dentro de la imagen
+        * L.rectangle() dibuja un rectángulo con las esquinas en (200,200) y (400,400).
+        * Se usa color rojo y un grosor de 2 píxeles para el borde.
+        * Se agrega un popup para mostrar información al hacer clic sobre él.
+        */
+
+        let rectangle = L.rectangle([[200, 200], [400, 400]], {
+            color: "red",
+            weight: 2
+        }).addTo(map);
+
+        rectangle.bindPopup("Zona marcada");
+
+    </script>
+
+</body>
+</html>

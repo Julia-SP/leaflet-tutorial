@@ -1,0 +1,132 @@
+<!--Tutorial 5: Crear un mapa interactivo con un mapa de vectores hecho con GeoJSON
+Con este código puedes manejar GeoJSON, aplicar estilos y eventos en Leaflet.-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tutorial 5</title>
+<!-- Enlace a la hoja de estilos de Leaflet -->
+   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+   integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+   crossorigin=""/>
+
+<style>
+   /* Establecemos el tamaño del mapa para que ocupe toda la pantalla */
+   #map { 
+       height: 100vh;
+       width: 100vw;
+   }
+</style>
+</head>
+<body>
+<!-- Contenedor donde se renderizará el mapa -->
+<div id="map"></div>
+
+<!-- Importamos Leaflet.js -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+   integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+   crossorigin=""></script>
+
+<script>
+   // 1️⃣ Creamos el mapa y lo centramos en unas coordenadas iniciales
+   let map = L.map('map').setView([51.505, -0.09], 13);
+
+   // 2️⃣ Añadimos una capa de mapa base desde OpenStreetMap
+   L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+       maxZoom: 19,
+       attribution: '© OpenStreetMap contributors'
+   }).addTo(map);
+
+   /* 3️⃣ Definimos un objeto GeoJSON EL PUNTO QUE APARECERÁ MARCADO
+   *GeoJSON es un formato estándar para representar datos geoespaciales.
+    * "type": "Feature" indica que es un objeto geográfico.
+    * "geometry" define el tipo de forma geométrica (Point en este caso).
+    * "coordinates" define su ubicación en (longitud, latitud)
+   */
+   let geojsonFeature = {
+       "type": "Feature",
+       "properties": {
+           "name": "Punto de prueba",
+           "amenity": "Parque",
+           "popupContent": "Este es un punto de prueba en el mapa."
+       },
+       "geometry": {
+           "type": "Point",
+           "coordinates": [-0.09, 51.505] // Latitud y longitud (invertidas en GeoJSON)
+       }
+   };
+
+   // 4️⃣ Añadimos el objeto GeoJSON al mapa
+   L.geoJSON(geojsonFeature).addTo(map);
+
+   /* 5️⃣ Definimos otro objeto GeoJSON con múltiples geometrías EL CÍRCULO QUE APARECE MARCADO POR DEFECTO AL ABRIR
+   * "type": "LineString" define una línea con múltiples coordenadas.
+    * "FeatureCollection" permite agrupar varias geometrías.*/
+   let myLines = {
+       "type": "FeatureCollection",
+       "features": [
+           {
+               "type": "Feature",
+               "geometry": {
+                   "type": "LineString",
+                   "coordinates": [
+                       [-0.1, 51.505],
+                       [-0.08, 51.51],
+                       [-0.06, 51.52]
+                   ]
+               }
+           }
+       ]
+   };
+
+   // 6️⃣ Aplicamos estilos personalizados a las líneas del GeoJSON
+   let myStyle = {
+       "color": "#ff7800",
+       "weight": 5,
+       "opacity": 0.65
+   };
+
+   // 7️⃣ Añadimos las líneas al mapa con el estilo definido
+   L.geoJSON(myLines, { style: myStyle }).addTo(map);
+
+   // 8️⃣ Definimos una función para aplicar diferentes estilos según el tipo de geometría (persolaiza los puntos)
+   function pointToLayerFeature(feature, latlng) {
+       return L.circleMarker(latlng, {
+           radius: 8,
+           fillColor: "#ff7800",
+           color: "#000",
+           weight: 1,
+           opacity: 1,
+           fillOpacity: 0.8
+       });
+   }
+
+   // 9️⃣ Definimos un objeto GeoJSON con un punto y aplicamos la función anterior
+   let geojsonMarkerOptions = {
+       "type": "Feature",
+       "geometry": {
+           "type": "Point",
+           "coordinates": [-0.12, 51.51]
+       }
+   };
+
+   L.geoJSON(geojsonMarkerOptions, {
+       pointToLayer: pointToLayerFeature
+   }).addTo(map);
+
+   // 🔟 Definimos una función para resaltar características con eventos de clic. Al clicar sale un popUp
+   function onEachFeature(feature, layer) {
+       if (feature.properties && feature.properties.popupContent) {
+           layer.bindPopup(feature.properties.popupContent);
+       }
+   }
+
+   // 1️⃣1️⃣ Añadimos el objeto GeoJSON con eventos de clic al mapa
+   L.geoJSON(geojsonFeature, {
+       onEachFeature: onEachFeature
+   }).addTo(map);
+
+</script>
+</body>
+</html>
